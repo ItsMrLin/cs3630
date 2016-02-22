@@ -28,3 +28,22 @@ class PPGraph:
 					sec = self.nodeToInd[row[1]]
 					self.adjMatrix[first][sec] = 1
 					self.adjMatrix[sec][first] = 1
+
+	def plan(self):
+		'''
+			To find a Eulerian Path
+
+			Assume only these two cases happen:
+				1. there are only 2 nodes of odd degrees
+				2. all nodes are of even degree
+		'''
+
+		node_degree = np.sum(self.adjMatrix, axis=0) % 2
+		odd_node_list = np.nonzero(node_degree)
+		if odd_node_list.shape[0] == 0:
+			return self.planning(0,1)
+		else:
+			return self.planning(odd_node_list[0], odd_node_list[1])
+
+
+	def BFS(self, start_ind, end_ind):
