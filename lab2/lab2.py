@@ -1,12 +1,12 @@
 from myro import *
-import os
-
 
 def main():
-	f = open(os.path.dirname(__file__) + '/robot_name.conf', 'r')
+	f = open('../robot_name.conf', 'r')
 	init(f.readline())
+	f.close()
 	try:
 		# do things here
+		turnBy(90, 'deg')
 		pass
 	finally:
 		stop()
