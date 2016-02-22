@@ -50,9 +50,9 @@ class PPGraph:
 		node_degree = np.sum(self.adjMatrix, axis=0) % 2
 		odd_node_list = np.nonzero(node_degree)[0]
 		if odd_node_list.shape[0] == 0:
-			print map(lambda x: self.indToNode[x], self.bfs(0,1))
+			return map(lambda x: self.indToNode[x], self.bfs(0,1))
 		else:
-			print map(lambda x: self.indToNode[x], self.bfs(odd_node_list[0], odd_node_list[1]))
+			return map(lambda x: self.indToNode[x], self.bfs(odd_node_list[0], odd_node_list[1]))
 
 
 	def bfs(self, start_ind, end_ind):
