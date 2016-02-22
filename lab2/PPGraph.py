@@ -1,5 +1,6 @@
 import os
 import csv
+import argparse
 import numpy as np
 # from myro import *
 
@@ -39,7 +40,7 @@ class PPGraph:
 		'''
 
 		node_degree = np.sum(self.adjMatrix, axis=0) % 2
-		odd_node_list = np.nonzero(node_degree)
+		odd_node_list = np.nonzero(node_degree)[0]
 		if odd_node_list.shape[0] == 0:
 			return self.planning(0,1)
 		else:
@@ -47,3 +48,16 @@ class PPGraph:
 
 
 	def BFS(self, start_ind, end_ind):
+		pass
+
+if __name__ == "__main__":
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--map', help="Specify the path to the map file")
+	args = parser.parse_args()
+	
+	a = PPGraph(args.map)
+	a.plan()
+
+
+
+
