@@ -11,8 +11,10 @@ def getAngleAndDistance(robotPos, robotAngle, targetPos):
 
 
 def mainLogic():
-	scalingFactor = 0.6
-	mapName = 'CS3630_Lab2_Map1.csv'
+	scalingFactor = 0.75
+	# scalingFactor = 1
+	# scalingFactor = 1
+	mapName = 'CS3630_Lab2_Map2.csv'
 
 	graph = PPGraph.PPGraph(mapName)
 	path, nodesToCoordinates = graph.plan()
@@ -23,7 +25,7 @@ def mainLogic():
 		moveDist, turnAngle = getAngleAndDistance((robotX, robotY), robotAngle, nodesToCoordinates[path[i]])
 		turnBy(turnAngle, 'deg')
 		wait(1)
-		forward(moveDist * scalingFactor, moveDist * scalingFactor)
+		forward(scalingFactor, moveDist * scalingFactor)
 		wait(1)
 
 		robotAngle = (robotAngle + turnAngle) % 360
