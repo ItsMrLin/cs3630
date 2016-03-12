@@ -1,3 +1,7 @@
+# Pics
+*.png
+*.jpg
+
 # Config files for projects
 *.conf
 
