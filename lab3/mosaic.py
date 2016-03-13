@@ -262,7 +262,7 @@ def extract_y_angle(R):
         y_ang (float): angle in radians
     """
     # code here
-    y_ang = np.arctan2(-R[0,2], R[2,2]) / np.pi * 180
+    y_ang = np.arctan2(abs(R[0,2]), abs(R[2,2]))
     return y_ang
 
 
