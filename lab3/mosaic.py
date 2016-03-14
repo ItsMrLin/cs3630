@@ -76,7 +76,7 @@ def propose_pairs(descripts_a, keypts_a, descripts_b, keypts_b):
         secInd = 0
         for j, ptb in enumerate(keypts_b):
             # a = np.array(descripts_a[i], dtype='int')
-            # b = np.array(descripts_b[i], dtype='int')
+            # b = np.array(descripts_b[j], dtype='int')
             # dist = ssd.hamming(a,b)
             dist = np.linalg.norm(descripts_a[i, :] - descripts_b[j, :])
             if dist < firstDist and dist < secDist:
@@ -90,16 +90,21 @@ def propose_pairs(descripts_a, keypts_a, descripts_b, keypts_b):
         confidence.append(firstDist/float(secDist + 1e-9))
         proposed_pair.append((i, firstInd))
     top_pairs = sorted( zip(proposed_pair, range(len(confidence))), key=lambda k: confidence[k[1]])
-    # N = np.sum(np.array(confidence) <= 0.9)
-    N = int(len(confidence) * 0.4)
-    print N
+    # temp = sorted(range(len(confidence)), key=lambda k: confidence[k])
+    # print [confidence[k] for k in temp][:30]
+    # raise
+    N = np.sum(np.array(confidence) <= 0.3)
+    N = max(N, min(24, len(confidence)))
+
+    # N = int(len(confidence) * 0.5)
+    # print N
     top_pt_inds_a = map(lambda x: x[0][0], top_pairs)
     top_pt_inds_b = map(lambda x: x[0][1], top_pairs)
     # print top_pt_inds
 
     pair_pts_a = [keypts_a[top_pt_inds_a[k]] for k in xrange(len(top_pt_inds_a))]
     pair_pts_b = [keypts_b[top_pt_inds_b[k]] for k in xrange(len(top_pt_inds_b))]
-    return pair_pts_a, pair_pts_b
+    return pair_pts_a[:N], pair_pts_b[:N]
 
 # fill your in code here
 def homog_dlt(ptsa, ptsb):
@@ -149,13 +154,13 @@ def homog_ransac(pair_pts_a, pair_pts_b):
     """
     # code here
 
-    s = 4
-    N = 500
+    s = 8
+    N = 1000
     epsilon = 10
     numPts = len(pair_pts_b)
     best_H = None
     count_inliers = 0
-    temp_count_inliears = 0
+    temp_count_inliers = 0
     best_inliers_a = []
     best_inliers_b = []
     for k in xrange(N):
@@ -163,17 +168,17 @@ def homog_ransac(pair_pts_a, pair_pts_b):
         sample_a = [pair_pts_a[ind] for ind in random_inds]
         sample_b = [pair_pts_b[ind] for ind in random_inds]
         H = homog_dlt(sample_a,sample_b)
-        temp_count_inliears = 0
+        temp_count_inliers = 0
         for i in xrange(numPts):
             target = H*pair_pts_a[i]
             target /= target[2] + 1e-9
             dist = np.linalg.norm(target - pair_pts_b[i])
             # print dist
             if dist < epsilon:
-                temp_count_inliears += 1
-        if temp_count_inliears >= count_inliers:
+                temp_count_inliers += 1
+        if temp_count_inliers >= count_inliers:
             best_H = H
-            count_inliers = temp_count_inliears
+            count_inliers = temp_count_inliers
 
     for i in xrange(numPts):
         target = best_H*pair_pts_a[i]
@@ -266,7 +271,7 @@ def extract_y_angle(R):
         y_ang (float): angle in radians
     """
     # code here
-    y_ang = np.arccos(R[0,0])
+    y_ang = np.arctan2(abs(R[2,0]), abs(R[2,2]))
     return y_ang
 
 
