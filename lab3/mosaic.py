@@ -166,7 +166,7 @@ def homog_ransac(pair_pts_a, pair_pts_b):
         temp_count_inliears = 0
         for i in xrange(numPts):
             target = H*pair_pts_a[i]
-            target /= target[2]
+            target /= target[2] + 1e-9
             dist = np.linalg.norm(target - pair_pts_b[i])
             # print dist
             if dist < epsilon:
@@ -202,9 +202,13 @@ def perspect_combine(img_a, img_b, H, length, width):
             if np.sum(warp_a[i][j]) > 0.:
                 mask_a[i,j,:] = 1.
     img_ab = warp_a
-    img_ab[:bw,:bl,:] -= warp_a[:bw,:bl,:]/2.*mask_a[:bw,:bl,:]
-    img_ab[:bw,:bl,:] += img_b*(1-mask_a[:bw,:bl,:])
-    img_ab[:bw,:bl,:] += img_b/2.*mask_a[:bw,:bl,:]
+    # img_ab[:bw,:bl,:] -= warp_a[:bw,:bl,:]/2.*mask_a[:bw,:bl,:]
+    # img_ab[:bw,:bl,:] += img_b*(1-mask_a[:bw,:bl,:])
+    # img_ab[:bw,:bl,:] += img_b/2.*mask_a[:bw,:bl,:]
+    img_ab[:bw,:bl,:] -= np.uint8(warp_a[:bw,:bl,:]/2.*mask_a[:bw,:bl,:])
+    img_ab[:bw,:bl,:] += np.uint8(img_b*(1-mask_a[:bw,:bl,:]))
+    img_ab[:bw,:bl,:] += np.uint8(img_b/2.*mask_a[:bw,:bl,:])
+
     return img_ab
 
 # DO NOT MODIFY img_combine_homog
@@ -262,7 +266,7 @@ def extract_y_angle(R):
         y_ang (float): angle in radians
     """
     # code here
-    y_ang = np.arctan2(abs(R[0,2]), abs(R[2,2]))
+    y_ang = np.arccos(R[0,0])
     return y_ang
 
 
@@ -341,7 +345,7 @@ def main():
         single_pair_combine(0, 1)
 
     if True:
-        multi_pair_combine(0, 5)
+        multi_pair_combine(1, 5)
 
 if __name__ == "__main__":
     main()
