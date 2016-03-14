@@ -23,10 +23,10 @@ def mainLogic():
 		R = rot_from_homog(best_H, K)
 		angle = extract_y_angle(R)
 
-		print "angle: ", angle / np.pi * 180
-		print "angle ratio: ", (5 * (i + 1))/(angle / np.pi * 180)
-		print "best_H: ", best_H
-		print
+		# print "angle: ", angle / np.pi * 180
+		print (5 * (i + 1))/(angle / np.pi * 180)
+		# print "best_H: ", best_H
+		# print
 		combined = perspect_combine(img_a, img_b, best_H, 1280, 800) # NEW
 		cv2.imwrite("combined.png", combined)
 

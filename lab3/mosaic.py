@@ -75,10 +75,10 @@ def propose_pairs(descripts_a, keypts_a, descripts_b, keypts_b):
         firstInd = 0
         secInd = 0
         for j, ptb in enumerate(keypts_b):
-            # a = np.array(descripts_a[i], dtype='int')
-            # b = np.array(descripts_b[j], dtype='int')
-            # dist = ssd.hamming(a,b)
-            dist = np.linalg.norm(descripts_a[i, :] - descripts_b[j, :])
+            a = np.array(descripts_a[i], dtype='int')
+            b = np.array(descripts_b[j], dtype='int')
+            dist = ssd.hamming(a,b)
+            # dist = np.linalg.norm(descripts_a[i, :] - descripts_b[j, :])
             if dist < firstDist and dist < secDist:
                 secInd = firstInd
                 secDist = firstDist
@@ -93,7 +93,7 @@ def propose_pairs(descripts_a, keypts_a, descripts_b, keypts_b):
     # temp = sorted(range(len(confidence)), key=lambda k: confidence[k])
     # print [confidence[k] for k in temp][:30]
     # raise
-    N = np.sum(np.array(confidence) <= 0.3)
+    N = np.sum(np.array(confidence) <= 0.6)
     N = max(N, min(24, len(confidence)))
 
     # N = int(len(confidence) * 0.5)
@@ -154,8 +154,8 @@ def homog_ransac(pair_pts_a, pair_pts_b):
     """
     # code here
 
-    s = 8
-    N = 1000
+    s = 4
+    N = 2000
     epsilon = 10
     numPts = len(pair_pts_b)
     best_H = None
