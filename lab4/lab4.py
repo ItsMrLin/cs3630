@@ -17,7 +17,16 @@ def detectBlobs(im):
     """
 
     #YOUR CODE HERE
-  
+    filter_1 = im[:,:,2] <= 0.8 * 255
+    filter_2 = im[:,:,1] >= 0.5 * 255
+    im[:,:,:] = 0
+    im[filter_1, :] = 255
+    im[filter_2, :] = 255
+
+    detector = cv2.SimpleBlobDetector()
+    keypoints = detector.detect(im)
+    cv2.imshow("Resampled", im)
+    cv2.waitKey(0)
     return keypoints
 
 def predict(particles, predictSigma):
@@ -29,6 +38,7 @@ def predict(particles, predictSigma):
     """
     
     #YOUR CODE HERE
+    particles = particles + predictSigma * np.random.randn(particles.shape[0], 2)
 
     return particles
 
@@ -42,7 +52,9 @@ def update(particles, weights, keypoints):
     """
 
     #YOUR CODE HERE
-  
+    print keypoints
+    raise
+
     return particles, weights
 
 def resample(particles, weights):
@@ -55,7 +67,7 @@ def resample(particles, weights):
     """
     
     #YOUR CODE HERE
-
+    newParticles = particles
     return newParticles, weights
 
 def visualizeParticles(im, particles, weights, color=(0,0,255)):
@@ -101,13 +113,17 @@ if __name__ == "__main__":
   initialScale = 50
   predictionSigma = 150
   x0 = np.array([600, 300])  #seed location for particles
-  particles = [] #YOUR CODE HERE: make some normally distributed particles
-  weights = [] #YOUR CODE HERE: make some weights to go along with the particles
+  particles = initialScale * np.random.randn(numParticles,2) + x0 #YOUR CODE HERE: make some normally distributed particles
+  particles[:,0] = particles[:,0].clip(0, imageWidth)
+  particles[:,1] = particles[:,1].clip(0, imageHeight)
+  weights = np.ones((numParticles,)) / float(numParticles) #YOUR CODE HERE: make some weights to go along with the particles
 
   for i in range(0, 43):
     #read in next image
     im = cv2.imread(imageSet+'/'+imageSet+'_' + '%02d.jpg'%i)
     yuv = cv2.cvtColor(im, cv2.COLOR_BGR2YUV)
+    print cv2.cvtColor(np.array([[255,0,0]]), cv2.COLOR_BGR2YUV)
+    raise
  
     #visualize particles
     im_to_show = visualizeParticles(im, particles, weights)
