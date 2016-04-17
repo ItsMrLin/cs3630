@@ -18,16 +18,21 @@ def detectBlobs(im):
 
     #YOUR CODE HERE
     # U in YUV
-    filter_11 = im[:,:,1] >= (239 - 20)
-    filter_12 = im[:,:,1] <= (239 + 20)
+    filter_11 = im[:,:,1] >= (168 - 30)
+    filter_12 = im[:,:,1] <= (168 + 30)
     filter_1 = np.logical_and(filter_11, filter_12)
-    filter_21 = im[:,:,2] >= (103 - 20)
-    filter_22 = im[:,:,2] <= (103 + 20)
+    filter_21 = im[:,:,2] >= (103 - 30)
+    filter_22 = im[:,:,2] <= (103 + 30)
     filter_2 = np.logical_and(filter_21, filter_22)
+    filter_all = np.logical_and(filter_1, filter_2)
+    print filter_all
     im[:,:,0] = 0
     im[:,:,1:2] = 128
-    im[filter_1, 0] = 255
-    im[filter_2, 0] = 255
+    im[filter_all, 0] = 255
+
+    # cv2.imshow("rinige", cv2.cvtColor(im, cv2.COLOR_YUV2BGR))
+    # cv2.waitKey(0)
+    # raise
 
     detector = cv2.SimpleBlobDetector()
     keypoints = detector.detect(im)
