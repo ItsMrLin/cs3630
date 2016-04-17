@@ -147,7 +147,7 @@ if __name__ == "__main__":
   particles[:,1] = particles[:,1].clip(0, imageHeight)
   weights = np.ones((numParticles,)) / float(numParticles) #YOUR CODE HERE: make some weights to go along with the particles
 
-  for i in range(10, 20):
+  for i in range(0, 43):
     #read in next image
     im = cv2.imread(imageSet+'/'+imageSet+'_' + '%02d.jpg'%i)
     yuv = cv2.cvtColor(im, cv2.COLOR_BGR2YUV)
