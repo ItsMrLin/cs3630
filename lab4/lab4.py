@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+from collections import Counter
 
 def detectBlobs(im):
     """ Takes and image and locates the potential location(s) of the red marker
@@ -68,6 +69,10 @@ def resample(particles, weights):
     
     #YOUR CODE HERE
     newParticles = particles[np.random.choice(range(particles.shape[0]),particles.shape[0]), :]
+    part_for_counting = newParticles.astype(int)
+    weights = Counter()
+    for i in xrange(particles.shape[0]):
+      weights[part_for_counting[i,:]] += 1
     return newParticles, weights
 
 def visualizeParticles(im, particles, weights, color=(0,0,255)):
