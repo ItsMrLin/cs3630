@@ -67,7 +67,7 @@ def resample(particles, weights):
     """
     
     #YOUR CODE HERE
-    newParticles = particles
+    newParticles = particles[np.random.choice(range(particles.shape[0]),particles.shape[0]), :]
     return newParticles, weights
 
 def visualizeParticles(im, particles, weights, color=(0,0,255)):
