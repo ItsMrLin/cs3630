@@ -17,16 +17,21 @@ def detectBlobs(im):
     """
 
     #YOUR CODE HERE
-    filter_1 = im[:,:,2] <= 0.8 * 255
-    filter_2 = im[:,:,1] >= 0.5 * 255
-    im[:,:,:] = 0
-    im[filter_1, :] = 255
-    im[filter_2, :] = 255
+    # U in YUV
+    filter_11 = im[:,:,1] >= (239 - 20)
+    filter_12 = im[:,:,1] <= (239 + 20)
+    filter_1 = np.logical_and(filter_11, filter_12)
+    filter_21 = im[:,:,2] >= (103 - 20)
+    filter_22 = im[:,:,2] <= (103 + 20)
+    filter_2 = np.logical_and(filter_21, filter_22)
+    im[:,:,0] = 0
+    im[:,:,1:2] = 128
+    im[filter_1, 0] = 255
+    im[filter_2, 0] = 255
 
     detector = cv2.SimpleBlobDetector()
     keypoints = detector.detect(im)
-    cv2.imshow("Resampled", im)
-    cv2.waitKey(0)
+    print "keypoints", keypoints
     return keypoints
 
 def predict(particles, predictSigma):
@@ -53,7 +58,6 @@ def update(particles, weights, keypoints):
 
     #YOUR CODE HERE
     print keypoints
-    raise
 
     return particles, weights
 
@@ -123,8 +127,6 @@ if __name__ == "__main__":
     #read in next image
     im = cv2.imread(imageSet+'/'+imageSet+'_' + '%02d.jpg'%i)
     yuv = cv2.cvtColor(im, cv2.COLOR_BGR2YUV)
-    print cv2.cvtColor(np.array([[255,0,0]]), cv2.COLOR_BGR2YUV)
-    raise
  
     #visualize particles
     im_to_show = visualizeParticles(im, particles, weights)
