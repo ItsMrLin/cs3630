@@ -68,7 +68,6 @@ def resample(particles, weights):
     
     #YOUR CODE HERE
     newParticles = particles[np.random.choice(range(particles.shape[0]),particles.shape[0], p=weights), :]
-    part_for_counting = newParticles.astype(int)
     weights = np.ones((particles.shape[0], )) / particles.shape[0]
     return newParticles, weights
 
