@@ -17,6 +17,24 @@ def detectBlobs(im):
     """
 
     #YOUR CODE HERE
+    params = cv2.SimpleBlobDetector_Params()
+ 
+    # # Change thresholds
+    params.minThreshold = 0;
+    params.maxThreshold = 1000;
+     
+    # Filter by Area.
+    params.filterByArea = False
+     
+    # Filter by Circularity
+    params.filterByCircularity = False
+     
+    # Filter by Convexity
+    params.filterByConvexity = False
+
+    # Filter by Inertia
+    params.filterByInertia = False
+ 
     # U in YUV
     filter_11 = im[:,:,1] >= (168 - 30)
     filter_12 = im[:,:,1] <= (168 + 30)
@@ -34,9 +52,11 @@ def detectBlobs(im):
     # cv2.waitKey(0)
     # raise
 
-    detector = cv2.SimpleBlobDetector()
+    detector = cv2.SimpleBlobDetector(params)
     keypoints = detector.detect(im)
     print "keypoints", keypoints
+    print "keypoints", map(lambda x: x.pt, keypoints)
+    raise
     return keypoints
 
 def predict(particles, predictSigma):
@@ -62,7 +82,6 @@ def update(particles, weights, keypoints):
     """
 
     #YOUR CODE HERE
-    print keypoints
 
     return particles, weights
 
@@ -128,7 +147,7 @@ if __name__ == "__main__":
   particles[:,1] = particles[:,1].clip(0, imageHeight)
   weights = np.ones((numParticles,)) / float(numParticles) #YOUR CODE HERE: make some weights to go along with the particles
 
-  for i in range(0, 43):
+  for i in range(10, 20):
     #read in next image
     im = cv2.imread(imageSet+'/'+imageSet+'_' + '%02d.jpg'%i)
     yuv = cv2.cvtColor(im, cv2.COLOR_BGR2YUV)
