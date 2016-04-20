@@ -1,4 +1,5 @@
 import numpy as np
+import math
 import cv2
 
 def detectBlobs(im):
@@ -58,7 +59,7 @@ def detectBlobs(im):
 
     detector = cv2.SimpleBlobDetector(params)
     keypoints = detector.detect(im)
-    print "keypoints", keypoints
+    keypoints = [x for x in keypoints if math.isnan(x.pt[0]) == False]
     print "keypoints", map(lambda x: x.pt, keypoints)
     # raise
     return keypoints
