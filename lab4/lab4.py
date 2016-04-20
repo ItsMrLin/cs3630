@@ -69,6 +69,8 @@ def predict(particles, predictSigma):
     
     #YOUR CODE HERE
     particles = particles + predictSigma * np.random.randn(particles.shape[0], 2)
+    particles[:,0] = particles[:,0].clip(0, imageWidth)
+    particles[:,1] = particles[:,1].clip(0, imageHeight)
 
     return particles
 
