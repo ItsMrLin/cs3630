@@ -91,10 +91,13 @@ def update(particles, weights, keypoints):
     #YOUR CODE HERE
     if len(keypoints) != 0:
       for i in xrange(particles.shape[0]):
-        distances = np.apply_along_axis(np.linalg.norm, 0, 
-          np.array(map(lambda x: x.pt, keypoints) - particles[i,:].transpose(), dtype='float')
+        distances = np.apply_along_axis(np.linalg.norm, 1, 
+          np.array(map(lambda x: x.pt, keypoints), dtype='float') - particles[i:i+1,:]
           )
-        weights[i] *= 1 - 1 / float( 1 + np.exp(-np.min(distances)) + 1e-9)
+        if np.min(distances) > 100:
+          weights[i] = 0
+        else:
+          weights[i] *= 1 - 1 / float( 1 + np.exp(-np.min(distances)) + 1e-9)
       weights /= np.sum(weights)
 
     return particles, weights
@@ -155,7 +158,7 @@ if __name__ == "__main__":
   imageHeight = 800 / 2
   numParticles = 1000
   initialScale = 150
-  predictionSigma = 150
+  predictionSigma = 100
   x0 = np.array([600, 300])  #seed location for particles
   particles = initialScale * np.random.randn(numParticles,2) + x0 #YOUR CODE HERE: make some normally distributed particles
   particles[:,0] = particles[:,0].clip(0, imageWidth)
