@@ -94,7 +94,7 @@ def update(particles, weights, keypoints):
         distances = np.apply_along_axis(np.linalg.norm, 0, 
           np.array(map(lambda x: x.pt, keypoints) - particles[i,:].transpose(), dtype='float')
           )
-        weights[i] = 1 / float(np.power(np.min(distances), 4))
+        weights[i] *= 1 - 1 / float( 1 + np.exp(-np.min(distances)) + 1e-9)
       weights /= np.sum(weights)
 
     return particles, weights
@@ -127,7 +127,8 @@ def visualizeParticles(im, particles, weights, color=(0,0,255)):
     for i in range(0, len(particles)):
       s += particles[i]*weights[i]
       cv2.circle(im_with_particles, tuple(particles[i].astype(int)), radius=int(weights[i]*250), color=(0,0,255), thickness=3)
-    cv2.circle(im_with_particles, tuple(s.astype(int)), radius=3, color=(255,0,0), thickness=6)    
+    cv2.circle(im_with_particles, tuple(s.astype(int)), radius=3, color=(255,0,0), thickness=6)  
+    print s  
     return im_with_particles
 
 def visualizeKeypoints(im, keypoints, color=(0,255,0)):
@@ -150,8 +151,8 @@ if __name__ == "__main__":
 
   #some initial variables you can use
   imageSet='ImageSet1'
-  imageWidth = 1280
-  imageHeight = 800
+  imageWidth = 1280 / 2
+  imageHeight = 800 / 2
   numParticles = 1000
   initialScale = 150
   predictionSigma = 150
@@ -164,6 +165,7 @@ if __name__ == "__main__":
   for i in range(0, 43):
     #read in next image
     im = cv2.imread(imageSet+'/'+imageSet+'_' + '%02d.jpg'%i)
+    im = cv2.resize(im, (imageWidth, imageHeight))
     yuv = cv2.cvtColor(im, cv2.COLOR_BGR2YUV)
  
     #visualize particles
