@@ -91,11 +91,10 @@ def update(particles, weights, keypoints):
     #YOUR CODE HERE
     if len(keypoints) != 0:
       for i in xrange(particles.shape[0]):
-        distances = np.apply_along_axis(lambda x: np.sum(np.power(x, 2)), 0, 
+        distances = np.apply_along_axis(np.linalg.norm, 0, 
           np.array(map(lambda x: x.pt, keypoints) - particles[i,:].transpose(), dtype='float')
           )
-        print distances
-        weights[i] = 1 / float(np.min(distances))
+        weights[i] = 1 / float(np.power(np.min(distances), 4))
       weights /= np.sum(weights)
 
     return particles, weights
