@@ -26,7 +26,7 @@ def detectBlobs(im):
      
     # Filter by Area.
     params.filterByArea = 0
-    # params.minArea = 0;
+    # params.minArea = 10;
     # params.maxArea = float("inf");
      
     # Filter by Circularity
@@ -41,8 +41,10 @@ def detectBlobs(im):
 
  
     # U in YUV
+    # filter_11 = im[:,:,1] >= (158 - 17)
+    # filter_12 = im[:,:,1] <= (158 + 17)
     filter_11 = im[:,:,1] >= (158 - 10)
-    filter_12 = im[:,:,1] <= (158 + 10)
+    filter_12 = im[:,:,1] <= (158 + 20)
     filter_1 = np.logical_and(filter_11, filter_12)
     filter_21 = im[:,:,2] >= (113 - 30)
     filter_22 = im[:,:,2] <= (113 + 30)
