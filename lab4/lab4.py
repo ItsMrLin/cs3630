@@ -20,35 +20,36 @@ def detectBlobs(im):
     #YOUR CODE HERE
     params = cv2.SimpleBlobDetector_Params()
  
+    params.filterByColor = True
+    params.blobColor = 255
+
     # # Change thresholds
-    # params.minThreshold = 10;
-    # params.maxThreshold = 100;
+    params.minThreshold = 0;
+    params.maxThreshold = 260;
      
     # Filter by Area.
     params.filterByArea = 1
-    params.minArea = 0;
+    params.minArea = 100;
     params.maxArea = float("inf");
 
-    minDistBetweenBlobs = 0;
+    # minDistBetweenBlobs = 0;
 
-    filterByColor = 0;
-    blobColor = 0;
+    # filterByColor = 0;
+    # blobColor = 0;
+
      
     # Filter by Circularity
-    params.filterByCircularity = 0
+    params.filterByCircularity = False
      
     # Filter by Convexity
-    params.filterByConvexity = 0
+    params.filterByConvexity = False
 
     # Filter by Inertia
     params.filterByInertia = 0
-    # params.maxInertiaRatio = 0.5
 
  
     # U in YUV
-    # filter_11 = im[:,:,1] >= (158 - 17)
-    # filter_12 = im[:,:,1] <= (158 + 17)
-    filter_11 = im[:,:,1] >= (158 - 10)
+    filter_11 = im[:,:,1] >= (158 - 17)
     filter_12 = im[:,:,1] <= (158 + 20)
     filter_1 = np.logical_and(filter_11, filter_12)
     filter_21 = im[:,:,2] >= (113 - 30)
@@ -56,19 +57,13 @@ def detectBlobs(im):
     filter_2 = np.logical_and(filter_21, filter_22)
     filter_all = np.logical_and(filter_1, filter_2)
     print filter_all
-    im[:,:,0] = 0
-    im[:,:,1:2] = 128
-    im[filter_all, 0] = 255
 
-    cv2.imshow("rinige", cv2.cvtColor(im, cv2.COLOR_YUV2BGR))
-    # cv2.waitKey(0)
-    # raise
+    grey_img = np.zeros(im.shape[:2], dtype='uint8')
+    grey_img[filter_all] = 255
 
     detector = cv2.SimpleBlobDetector(params)
-    keypoints = detector.detect(im)
+    keypoints = detector.detect(grey_img)
     keypoints = [x for x in keypoints if math.isnan(x.pt[0]) == False]
-    print "keypoints", map(lambda x: x.pt, keypoints)
-    # raise
     return keypoints
 
 def predict(particles, predictSigma):
@@ -100,10 +95,13 @@ def update(particles, weights, keypoints):
           np.array(map(lambda x: x.pt, keypoints), dtype='float') - particles[i:i+1,:]
           )
         if np.min(distances) > 100:
-          weights[i] = 0
+          weights[i] *= 0
         else:
-          weights[i] *= 1 - 1 / float( 1 + np.exp(-np.min(distances)) + 1e-9)
-      weights /= np.sum(weights)
+          for dist in distances:
+            weights[i] *= 1 - 100 / float( 1 + np.exp(-dist)) + 1e-6
+      weights /= np.sum(weights) + 1e-9
+    if np.sum(weights) == 0:
+      weights = np.ones(weights.shape)/weights.shape[0]
 
     return particles, weights
 
@@ -135,8 +133,7 @@ def visualizeParticles(im, particles, weights, color=(0,0,255)):
     for i in range(0, len(particles)):
       s += particles[i]*weights[i]
       cv2.circle(im_with_particles, tuple(particles[i].astype(int)), radius=int(weights[i]*250), color=(0,0,255), thickness=3)
-    cv2.circle(im_with_particles, tuple(s.astype(int)), radius=3, color=(255,0,0), thickness=6)  
-    print s  
+    cv2.circle(im_with_particles, tuple(s.astype(int)), radius=3, color=(255,0,0), thickness=6)
     return im_with_particles
 
 def visualizeKeypoints(im, keypoints, color=(0,255,0)):
@@ -159,11 +156,12 @@ if __name__ == "__main__":
 
   #some initial variables you can use
   imageSet='ImageSet1'
-  imageWidth = 1280 / 2
-  imageHeight = 800 / 2
+  # imageSet='ImageSet2'
+  imageWidth = 1280
+  imageHeight = 800
   numParticles = 1000
   initialScale = 150
-  predictionSigma = 100
+  predictionSigma = 150
   x0 = np.array([600, 300])  #seed location for particles
   particles = initialScale * np.random.randn(numParticles,2) + x0 #YOUR CODE HERE: make some normally distributed particles
   particles[:,0] = particles[:,0].clip(0, imageWidth)
@@ -173,7 +171,6 @@ if __name__ == "__main__":
   for i in range(0, 43):
     #read in next image
     im = cv2.imread(imageSet+'/'+imageSet+'_' + '%02d.jpg'%i)
-    im = cv2.resize(im, (imageWidth, imageHeight))
     yuv = cv2.cvtColor(im, cv2.COLOR_BGR2YUV)
  
     #visualize particles
