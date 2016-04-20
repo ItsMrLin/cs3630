@@ -87,10 +87,13 @@ def update(particles, weights, keypoints):
     """
 
     #YOUR CODE HERE
-    for i in xrange(particles.shape[0]):
-      distances = np.apply_along_axis(np.linalg.norm, 0, np.array(map(lambda x: x.pt, keypoints)))
-      weights[i] = 1 / float(np.min(distances))
-    weights /= np.sum(weights)
+    if len(keypoints) != 0:
+      for i in xrange(particles.shape[0]):
+        distances = np.apply_along_axis(np.linalg.norm, 0, 
+          np.array(map(lambda x: x.pt, keypoints) - particles[i,:].transpose(), dtype='float')
+          )
+        weights[i] = 1 / float(np.min(distances))
+      weights /= np.sum(weights)
 
     return particles, weights
 
@@ -156,7 +159,7 @@ if __name__ == "__main__":
   particles[:,1] = particles[:,1].clip(0, imageHeight)
   weights = np.ones((numParticles,)) / float(numParticles) #YOUR CODE HERE: make some weights to go along with the particles
 
-  for i in range(0, 43):
+  for i in range(0, 10):
     #read in next image
     im = cv2.imread(imageSet+'/'+imageSet+'_' + '%02d.jpg'%i)
     yuv = cv2.cvtColor(im, cv2.COLOR_BGR2YUV)
