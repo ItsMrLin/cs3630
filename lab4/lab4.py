@@ -44,8 +44,8 @@ def detectBlobs(im):
     filter_11 = im[:,:,1] >= (158 - 10)
     filter_12 = im[:,:,1] <= (158 + 10)
     filter_1 = np.logical_and(filter_11, filter_12)
-    filter_21 = im[:,:,2] >= (103 - 20)
-    filter_22 = im[:,:,2] <= (103 + 20)
+    filter_21 = im[:,:,2] >= (113 - 30)
+    filter_22 = im[:,:,2] <= (113 + 30)
     filter_2 = np.logical_and(filter_21, filter_22)
     filter_all = np.logical_and(filter_1, filter_2)
     print filter_all
