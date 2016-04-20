@@ -86,6 +86,10 @@ def update(particles, weights, keypoints):
     """
 
     #YOUR CODE HERE
+    for i in xrange(particles.shape[0]):
+      distances = np.apply_along_axis(np.linalg.norm, 0, np.array(map(lambda x: x.pt, keypoints)))
+      weights[i] = np.min(distances)
+    weights /= np.max(weights)
 
     return particles, weights
 
