@@ -25,9 +25,14 @@ def detectBlobs(im):
     # params.maxThreshold = 100;
      
     # Filter by Area.
-    params.filterByArea = 0
-    # params.minArea = 10;
-    # params.maxArea = float("inf");
+    params.filterByArea = 1
+    params.minArea = 0;
+    params.maxArea = float("inf");
+
+    minDistBetweenBlobs = 0;
+
+    filterByColor = 0;
+    blobColor = 0;
      
     # Filter by Circularity
     params.filterByCircularity = 0
@@ -37,7 +42,7 @@ def detectBlobs(im):
 
     # Filter by Inertia
     params.filterByInertia = 0
-    params.maxInertiaRatio = 0.5
+    # params.maxInertiaRatio = 0.5
 
  
     # U in YUV
@@ -186,6 +191,7 @@ if __name__ == "__main__":
 
     im_to_show = visualizeKeypoints(im, keypoints)
     im_to_show = visualizeParticles(im_to_show, particles, weights)
+    
     cv2.imshow("Reweighted", im_to_show)
     cv2.imwrite('processed/'+imageSet+'_' + '%02d_'%i+'3_Reweighted.jpg', im_to_show)
 
