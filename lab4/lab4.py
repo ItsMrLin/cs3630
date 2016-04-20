@@ -89,7 +89,7 @@ def update(particles, weights, keypoints):
     #YOUR CODE HERE
     if len(keypoints) != 0:
       for i in xrange(particles.shape[0]):
-        distances = np.apply_along_axis(np.linalg.norm, 0, 
+        distances = np.apply_along_axis(lambda x: np.power(x, 2), 0, 
           np.array(map(lambda x: x.pt, keypoints) - particles[i,:].transpose(), dtype='float')
           )
         weights[i] = 1 / float(np.min(distances))
@@ -151,7 +151,7 @@ if __name__ == "__main__":
   imageWidth = 1280
   imageHeight = 800
   numParticles = 1000
-  initialScale = 50
+  initialScale = 150
   predictionSigma = 150
   x0 = np.array([600, 300])  #seed location for particles
   particles = initialScale * np.random.randn(numParticles,2) + x0 #YOUR CODE HERE: make some normally distributed particles
@@ -159,7 +159,7 @@ if __name__ == "__main__":
   particles[:,1] = particles[:,1].clip(0, imageHeight)
   weights = np.ones((numParticles,)) / float(numParticles) #YOUR CODE HERE: make some weights to go along with the particles
 
-  for i in range(0, 10):
+  for i in range(0, 43):
     #read in next image
     im = cv2.imread(imageSet+'/'+imageSet+'_' + '%02d.jpg'%i)
     yuv = cv2.cvtColor(im, cv2.COLOR_BGR2YUV)
