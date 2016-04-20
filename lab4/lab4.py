@@ -20,27 +20,31 @@ def detectBlobs(im):
     params = cv2.SimpleBlobDetector_Params()
  
     # # Change thresholds
-    params.minThreshold = 0;
-    params.maxThreshold = 1000;
+    # params.minThreshold = 10;
+    # params.maxThreshold = 100;
      
     # Filter by Area.
-    params.filterByArea = False
+    params.filterByArea = 0
+    # params.minArea = 0;
+    # params.maxArea = float("inf");
      
     # Filter by Circularity
-    params.filterByCircularity = False
+    params.filterByCircularity = 0
      
     # Filter by Convexity
-    params.filterByConvexity = False
+    params.filterByConvexity = 0
 
     # Filter by Inertia
-    params.filterByInertia = False
+    params.filterByInertia = 0
+    params.maxInertiaRatio = 0.5
+
  
     # U in YUV
-    filter_11 = im[:,:,1] >= (168 - 30)
-    filter_12 = im[:,:,1] <= (168 + 30)
+    filter_11 = im[:,:,1] >= (158 - 20)
+    filter_12 = im[:,:,1] <= (158 + 20)
     filter_1 = np.logical_and(filter_11, filter_12)
-    filter_21 = im[:,:,2] >= (103 - 30)
-    filter_22 = im[:,:,2] <= (103 + 30)
+    filter_21 = im[:,:,2] >= (113 - 20)
+    filter_22 = im[:,:,2] <= (113 + 20)
     filter_2 = np.logical_and(filter_21, filter_22)
     filter_all = np.logical_and(filter_1, filter_2)
     print filter_all
@@ -48,7 +52,7 @@ def detectBlobs(im):
     im[:,:,1:2] = 128
     im[filter_all, 0] = 255
 
-    # cv2.imshow("rinige", cv2.cvtColor(im, cv2.COLOR_YUV2BGR))
+    cv2.imshow("rinige", cv2.cvtColor(im, cv2.COLOR_YUV2BGR))
     # cv2.waitKey(0)
     # raise
 
@@ -56,7 +60,7 @@ def detectBlobs(im):
     keypoints = detector.detect(im)
     print "keypoints", keypoints
     print "keypoints", map(lambda x: x.pt, keypoints)
-    raise
+    # raise
     return keypoints
 
 def predict(particles, predictSigma):
