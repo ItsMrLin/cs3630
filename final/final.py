@@ -51,10 +51,19 @@ def detectBlobs(im):
 	print im[:,:,0]
 
 	# in HSV
-	filter_11 = im[:,:,0] >= (360 - 20)
-	filter_12 = im[:,:,0] <= (20)
-	filter_1 = np.logical_and(filter_11, filter_12)
-	filter_all = filter_1
+	filter_h1 = im[:,:,0] >= (179 - 10)
+	filter_h2 = im[:,:,0] <= (10)
+	filter_h = np.logical_or(filter_h1, filter_h2)
+
+	filter_s1 = im[:,:,1] >= (191 - 25)
+	filter_s2 = im[:,:,1] <= (191 + 25)
+	filter_s = np.logical_and(filter_s1, filter_s2)
+
+	filter_v1 = im[:,:,2] >= (128 - 25)
+	filter_v2 = im[:,:,2] <= (128 - 25)
+	filter_v = np.logical_and(filter_v1, filter_v2)
+
+	filter_all = np.logical_and(filter_h, filter_s, filter_v)
 
 	grey_img = np.zeros(im.shape[:2], dtype='uint8')
 	grey_img[filter_all] = 255
@@ -82,6 +91,8 @@ def naiveLogic():
 		myro_im = takePicture()
 		savePicture(myro_im, "image.png")
 		opencv_im = cv2.imread("image.png")
+		cv2.imshow("original", opencv_im)
+
 		opencv_im = cv2.cvtColor(opencv_im, cv2.COLOR_BGR2HSV)
 		keypoints = detectBlobs(opencv_im)
 		print keypoints
