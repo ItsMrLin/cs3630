@@ -64,6 +64,19 @@ def detectBlobs(im):
     keypoints = [x for x in keypoints if math.isnan(x.pt[0]) == False]
     return keypoints
 
+def naiveLogic():
+	while True:
+		myro_im = takePicture()
+		savePicture(picture, "image.png")
+		opencv_im = cv2.imread("image.png")
+		keypoints = detectBlobs(myro_im)
+		if len(keypoints) >= 0:
+			forward(1, 2)
+			wait(1)
+		else:
+			turnBy(30, 'deg')
+
+
 def mainLogic():
 	pass
 
