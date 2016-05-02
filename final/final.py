@@ -86,6 +86,16 @@ def visualizeKeypoints(im, keypoints, color=(0,255,0)):
 	im_with_keypoints = cv2.drawKeypoints(im, keypoints, np.array([]), color, cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 	return im_with_keypoints
 
+def fixKeypointsOrientation(keypoints, img_x, img_y):
+	offPortion = 0
+	for keypoint in keypoints:
+		ptx, pty = keypoint.pt
+		if pty < img_y/4:
+			turnBy(-10, 'deg')
+		elif pty > img_y*3/4:
+			turnBy(10, 'deg')
+
+
 def naiveLogic():
 	while True:
 		myro_im = takePicture()
@@ -95,11 +105,11 @@ def naiveLogic():
 
 		opencv_im = cv2.cvtColor(opencv_im, cv2.COLOR_BGR2HSV)
 		keypoints = detectBlobs(opencv_im)
-		print keypoints
 		opencv_im = visualizeKeypoints(opencv_im, keypoints)
 		# cv2.imshow("seen", opencv_im)
 		cv2.waitKey(0)
 		if len(keypoints) > 0:
+			fixKeypointsOrientation(keypoints, opencv_im.shape[0], opencv_im.shape[1])
 			forward(1, 2)
 			wait(1)
 		else:
