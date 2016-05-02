@@ -2,6 +2,8 @@ from myro import *
 import numpy as np
 import math
 import cv2
+import time
+
 
 def detectBlobs(im):
 	""" Takes and image and locates the potential location(s) of the red marker
@@ -30,7 +32,7 @@ def detectBlobs(im):
 	 
 	# Filter by Area.
 	params.filterByArea = 1
-	params.minArea = 100;
+	params.minArea = 30;
 	params.maxArea = float("inf");
 
 	# minDistBetweenBlobs = 0;
@@ -48,19 +50,19 @@ def detectBlobs(im):
 	# Filter by Inertia
 	params.filterByInertia = 0
 
-	print im[:,:,0]
+	# print im[:,:,0]
 
 	# in HSV
-	filter_h1 = im[:,:,0] >= (179 - 10)
-	filter_h2 = im[:,:,0] <= (10)
+	filter_h1 = im[:,:,0] >= (179 - 13)
+	filter_h2 = im[:,:,0] <= (13)
 	filter_h = np.logical_or(filter_h1, filter_h2)
 
-	filter_s1 = im[:,:,1] >= (191 - 25)
-	filter_s2 = im[:,:,1] <= (191 + 25)
+	filter_s1 = im[:,:,1] >= (191 - 40)
+	filter_s2 = im[:,:,1] <= (191 + 40)
 	filter_s = np.logical_and(filter_s1, filter_s2)
 
-	filter_v1 = im[:,:,2] >= (128 - 25)
-	filter_v2 = im[:,:,2] <= (128 - 25)
+	filter_v1 = im[:,:,2] >= (128 - 40)
+	filter_v2 = im[:,:,2] <= (128 - 40)
 	filter_v = np.logical_and(filter_v1, filter_v2)
 
 	filter_all = np.logical_and(filter_h, filter_s, filter_v)
@@ -89,11 +91,11 @@ def visualizeKeypoints(im, keypoints, color=(0,255,0)):
 def fixKeypointsOrientation(keypoints, img_x, img_y):
 	offPortion = 0
 	keypoints.sort(key=lambda keypoint: keypoint.response, reverse=True)
-	ptx, pty = keypoints[0].pt:
+	ptx, pty = keypoints[0].pt
 	if pty < img_y/4:
-		turnBy(-10, 'deg')
-	elif pty > img_y*3/4:
 		turnBy(10, 'deg')
+	elif pty > img_y*3/4:
+		turnBy(-10, 'deg')
 
 
 def naiveLogic():
@@ -107,11 +109,12 @@ def naiveLogic():
 		keypoints = detectBlobs(opencv_im)
 		opencv_im = visualizeKeypoints(opencv_im, keypoints)
 		# cv2.imshow("seen", opencv_im)
-		cv2.waitKey(0)
+		print keypoints
+		# cv2.waitKey(0)
 		if len(keypoints) > 0:
 			fixKeypointsOrientation(keypoints, opencv_im.shape[0], opencv_im.shape[1])
 			forward(1, 2)
-			wait(1)
+			# wait(1)
 		else:
 			turnBy(30, 'deg')
 
