@@ -88,12 +88,12 @@ def visualizeKeypoints(im, keypoints, color=(0,255,0)):
 
 def fixKeypointsOrientation(keypoints, img_x, img_y):
 	offPortion = 0
-	for keypoint in keypoints:
-		ptx, pty = keypoint.pt
-		if pty < img_y/4:
-			turnBy(-10, 'deg')
-		elif pty > img_y*3/4:
-			turnBy(10, 'deg')
+	keypoints.sort(key=lambda keypoint: keypoint.response, reverse=True)
+	ptx, pty = keypoints[0].pt:
+	if pty < img_y/4:
+		turnBy(-10, 'deg')
+	elif pty > img_y*3/4:
+		turnBy(10, 'deg')
 
 
 def naiveLogic():
