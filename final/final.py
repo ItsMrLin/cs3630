@@ -128,14 +128,10 @@ def naiveLogic():
 
 
 def rotateAndHitLogic():
-	# pic = takePicture("color")
-	# opencv_im = np.array(pic.image)
-	# cv2.imshow("real_time", opencv_im)
-	# cv2.waitKey(0)
-
 	setPicSize("small")
+
+	# keep rotating
 	while True:
-		rotate(-0.1)
 		opencv_im = np.array(takePicture().image)
 		opencv_im = cv2.cvtColor(opencv_im, cv2.COLOR_RGB2BGR)
 		opencv_im = cv2.cvtColor(opencv_im, cv2.COLOR_BGR2HSV)
@@ -145,7 +141,15 @@ def rotateAndHitLogic():
 		opencv_im = cv2.cvtColor(opencv_im, cv2.COLOR_HSV2BGR)
 		cv2.imshow("real_time", opencv_im)
 		keypoints, area = detectBlobs(opencv_im)
-		print keypoints
+		
+		# when see a object
+		if len(keypoints) > 0:
+			rotate(0)
+			translate(1)
+		else:
+			rotate(-0.1)
+			translate(0)
+
 		cv2.waitKey(500)
 
 
