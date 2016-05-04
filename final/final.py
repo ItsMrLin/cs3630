@@ -21,7 +21,7 @@ def detectBlobs(im):
 	 
 	# Filter by Area.
 	params.filterByArea = 1
-	params.minArea = 50;
+	params.minArea = 75;
 	params.maxArea = float("inf");
 
 	# minDistBetweenBlobs = 0;
@@ -42,8 +42,8 @@ def detectBlobs(im):
 	# print im[:,:,0]
 
 	# in HSV
-	filter_h1 = im[:,:,0] >= (179 - 15)
-	filter_h2 = im[:,:,0] <= (15)
+	filter_h1 = im[:,:,0] >= (179 - 5)
+	filter_h2 = im[:,:,0] <= (5)
 	filter_h = np.logical_or(filter_h1, filter_h2)
 
 	# white or color
@@ -52,13 +52,13 @@ def detectBlobs(im):
 	# small means more color less white
 	# filter_s1 = im[:,:,1] >= (0)
 	# filter_s2 = im[:,:,1] <= (64)
-	filter_s1 = im[:,:,1] >= (100)
+	filter_s1 = im[:,:,1] >= (50)
 	filter_s2 = im[:,:,1] <= (255)	
 	filter_s = np.logical_and(filter_s1, filter_s2)
 
 	# black or color
 	# small means more 
-	filter_v1 = im[:,:,2] >= (75)
+	filter_v1 = im[:,:,2] >= (50)
 	filter_v2 = im[:,:,2] <= (255)
 	# filter_v1 = im[:,:,2] >= (0)
 	# filter_v2 = im[:,:,2] <= (20)
@@ -79,8 +79,6 @@ def detectBlobs(im):
 	keypoints = detector.detect(grey_img)
 	keypoints = [x for x in keypoints if math.isnan(x.pt[0]) == False]
 
-	print "keypoints", keypoints
-
 	return keypoints, area
 
 def visualizeKeypoints(im, keypoints, color=(0,255,0)):
@@ -97,11 +95,17 @@ def visualizeKeypoints(im, keypoints, color=(0,255,0)):
 def fixKeypointsOrientation(keypoints, img_x, img_y):
 	offPortion = 0
 	keypoints.sort(key=lambda keypoint: keypoint.response, reverse=True)
-	ptx, pty = keypoints[0].pt
-	if pty < img_y/3:
-		turnBy(10, 'deg')
-	elif pty > img_y*2/3:
-		turnBy(-10, 'deg')
+	pty, ptx = keypoints[0].pt
+
+	print ptx, pty, img_x, img_y
+	if pty < img_y*2/5.0:
+		print "go slightly left"
+		rotate(0.1)
+	elif pty > img_y*3/5.0:
+		print "go slightly right"
+		rotate(-0.1)
+	else:
+		rotate(0)
 
 
 def naiveLogic():
@@ -121,6 +125,7 @@ def naiveLogic():
 			# wait(1)
 		else:
 			turnBy(-45, 'deg')
+			stop()
 
 
 def rotateAndHitLogic():
@@ -142,12 +147,14 @@ def rotateAndHitLogic():
 		
 		# when see a object
 		if len(keypoints) > 0:
-			rotate(0)
+			fixKeypointsOrientation(keypoints, opencv_im.shape[0], opencv_im.shape[1])
 			translate(1)
+			# time.sleep(0.5)
 		else:
-			rotate(-0.1)
-			# turnBy(-45, 'deg')
+			rotate(0)
 			translate(0)
+			turnBy(-45, 'deg')
+			stop()
 
 		cv2.waitKey(500)
 
