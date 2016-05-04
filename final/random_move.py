@@ -8,8 +8,11 @@ def mainLogic():
 	while True:
 		# p = 0.3
 		# with p probility making a random turn
-		if random.random() < 0.1:
-			rotate(0.5)
+		if random.random() < 0.5:
+			if random.random() < 0.5:
+				rotate(0.5)
+			else:
+				rotate(-0.5)
 			# turnBy(int(random.random() * 360), 'deg')
 		else:
 			# with 1-p probability moving forward 1 - 3 seconds at half speed
