@@ -6,23 +6,9 @@ import time
 
 # 1 meter pixel count
 area_multiplier = 1
-one_meter_area = 60000.0 * area_multiplier
+one_meter_area = 5000.0 * area_multiplier
 
 def detectBlobs(im):
-	""" Takes and image and locates the potential location(s) of the red marker
-		on top of the robot
-
-	Hint: bgr is the standard color space for images in OpenCV, but other color
-		  spaces may yield better results
-
-	Note: you are allowed to use OpenCV function calls here
-
-	Returns:
-	  keypoints: the keypoints returned by the SimpleBlobDetector, each of these
-				 keypoints has pt and size values that should be used as
-				 measurements for the particle filter
-	"""
-
 	#YOUR CODE HERE
 	params = cv2.SimpleBlobDetector_Params()
  
@@ -56,23 +42,30 @@ def detectBlobs(im):
 	# print im[:,:,0]
 
 	# in HSV
-	filter_h1 = im[:,:,0] >= (179 - 13)
-	filter_h2 = im[:,:,0] <= (13)
+	filter_h1 = im[:,:,0] >= (179 - 15)
+	filter_h2 = im[:,:,0] <= (15)
 	filter_h = np.logical_or(filter_h1, filter_h2)
 
 	# white or color
 	# filter_s1 = im[:,:,1] >= (191 - 0)
 	# filter_s2 = im[:,:,1] <= (191 + 1000)
-	filter_s1 = im[:,:,1] >= (0)
-	filter_s2 = im[:,:,1] <= (64)
+	# small means more color less white
+	# filter_s1 = im[:,:,1] >= (0)
+	# filter_s2 = im[:,:,1] <= (64)
+	filter_s1 = im[:,:,1] >= (100)
+	filter_s2 = im[:,:,1] <= (255)	
 	filter_s = np.logical_and(filter_s1, filter_s2)
 
 	# black or color
-	filter_v1 = im[:,:,2] >= (200)
+	# small means more 
+	filter_v1 = im[:,:,2] >= (75)
 	filter_v2 = im[:,:,2] <= (255)
+	# filter_v1 = im[:,:,2] >= (0)
+	# filter_v2 = im[:,:,2] <= (20)
 	filter_v = np.logical_and(filter_v1, filter_v2)
 
-	filter_all = np.logical_and(filter_h, filter_s, filter_v)
+	filter_all = np.logical_and(filter_h, filter_s)
+	filter_all = np.logical_and(filter_all, filter_v)
 
 	grey_img = np.zeros(im.shape[:2], dtype='uint8')
 	grey_img[filter_all] = 255
@@ -85,6 +78,9 @@ def detectBlobs(im):
 	detector = cv2.SimpleBlobDetector(params)
 	keypoints = detector.detect(grey_img)
 	keypoints = [x for x in keypoints if math.isnan(x.pt[0]) == False]
+
+	print "keypoints", keypoints
+
 	return keypoints, area
 
 def visualizeKeypoints(im, keypoints, color=(0,255,0)):
@@ -133,14 +129,16 @@ def rotateAndHitLogic():
 	# keep rotating
 	while True:
 		opencv_im = np.array(takePicture().image)
-		opencv_im = cv2.cvtColor(opencv_im, cv2.COLOR_RGB2BGR)
-		opencv_im = cv2.cvtColor(opencv_im, cv2.COLOR_BGR2HSV)
-		opencv_im = opencv_im.astype('float')
-		opencv_im[:,:,1] *= (255/np.max(opencv_im[:,:,1]))
-		opencv_im = opencv_im.astype('uint8')
-		opencv_im = cv2.cvtColor(opencv_im, cv2.COLOR_HSV2BGR)
-		cv2.imshow("real_time", opencv_im)
+		opencv_im = cv2.cvtColor(opencv_im, cv2.COLOR_RGB2HSV)
+		# opencv_im = cv2.cvtColor(opencv_im, cv2.COLOR_RGB2BGR)
+		# opencv_im = cv2.cvtColor(opencv_im, cv2.COLOR_BGR2HSV)
+		# opencv_im = opencv_im.astype('float')
+		# opencv_im[:,:,1] *= (255/np.max(opencv_im[:,:,1]))
+		# opencv_im = opencv_im.astype('uint8')
 		keypoints, area = detectBlobs(opencv_im)
+
+		im_to_show = cv2.cvtColor(opencv_im, cv2.COLOR_HSV2BGR)
+		cv2.imshow("real_time", im_to_show)
 		
 		# when see a object
 		if len(keypoints) > 0:
@@ -148,6 +146,7 @@ def rotateAndHitLogic():
 			translate(1)
 		else:
 			rotate(-0.1)
+			# turnBy(-45, 'deg')
 			translate(0)
 
 		cv2.waitKey(500)
